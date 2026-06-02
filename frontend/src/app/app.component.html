@@ -1,0 +1,18 @@
+<div class="app-shell">
+  <header class="topbar">
+    <a class="brand" routerLink="/" aria-label="Habit Tracker home">
+      <span class="brand-mark">HT</span>
+      <span>Habit Tracker</span>
+    </a>
+
+    <nav class="nav-links" aria-label="Primary navigation">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Home</a>
+      <a routerLink="/habits" routerLinkActive="active">Habits</a>
+      <a routerLink="/habits/new" routerLinkActive="active">New Habit</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <router-outlet></router-outlet>
+  </main>
+</div>

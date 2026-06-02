@@ -1,0 +1,62 @@
+<section class="page-header">
+  <div>
+    <p class="eyebrow">{{ habitId === null ? 'New habit' : 'Edit habit' }}</p>
+    <h1>{{ habitId === null ? 'Create routine' : 'Update routine' }}</h1>
+  </div>
+  <a class="btn btn-secondary" routerLink="/habits">Back to list</a>
+</section>
+
+<p class="status-message" *ngIf="loading">Loading habit...</p>
+<p class="status-message error" *ngIf="error">{{ error }}</p>
+
+<form class="habit-form" #habitForm="ngForm" (ngSubmit)="submit(habitForm)" *ngIf="!loading">
+  <label>
+    <span>Name</span>
+    <input
+      type="text"
+      name="name"
+      [(ngModel)]="form.name"
+      required
+      maxlength="120"
+      placeholder="Read 20 pages"
+    >
+  </label>
+
+  <label>
+    <span>Description</span>
+    <textarea
+      name="description"
+      [(ngModel)]="form.description"
+      maxlength="1000"
+      rows="5"
+      placeholder="What does this habit mean in practice?"
+    ></textarea>
+  </label>
+
+  <div class="form-grid">
+    <label>
+      <span>Category</span>
+      <input
+        type="text"
+        name="category"
+        [(ngModel)]="form.category"
+        maxlength="80"
+        placeholder="Health"
+      >
+    </label>
+
+    <label>
+      <span>Target frequency</span>
+      <select name="targetFrequency" [(ngModel)]="form.targetFrequency" required>
+        <option *ngFor="let frequency of frequencies" [value]="frequency">{{ frequency }}</option>
+      </select>
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button class="btn btn-primary" type="submit" [disabled]="habitForm.invalid || saving">
+      {{ saving ? 'Saving...' : 'Save habit' }}
+    </button>
+    <a class="btn btn-secondary" routerLink="/habits">Cancel</a>
+  </div>
+</form>

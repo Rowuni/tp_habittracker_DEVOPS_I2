@@ -1,0 +1,74 @@
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Habits</p>
+    <h1>Your routines</h1>
+  </div>
+  <a class="btn btn-primary" routerLink="/habits/new">Create habit</a>
+</section>
+
+<p class="status-message" *ngIf="loading">Loading habits...</p>
+<p class="status-message error" *ngIf="error">{{ error }}</p>
+
+<div class="empty-state" *ngIf="!loading && !error && rows.length === 0">
+  <h2>No habits yet</h2>
+  <p>Add a routine, then mark it as completed once per day.</p>
+  <a class="btn btn-primary" routerLink="/habits/new">Create habit</a>
+</div>
+
+<section class="habit-grid" *ngIf="!loading && !error && rows.length > 0">
+  <article class="habit-card" *ngFor="let row of rows; trackBy: trackByHabitId">
+    <div class="habit-card-top">
+      <span class="category-pill">{{ row.habit.category || 'General' }}</span>
+      <div class="icon-actions">
+        <a class="icon-button" [routerLink]="['/habits', row.habit.id, 'edit']" aria-label="Edit habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 20h4l10.5-10.5a2.1 2.1 0 0 0-3-3L5 17v3z"></path>
+            <path d="M13.5 7.5l3 3"></path>
+          </svg>
+        </a>
+        <button class="icon-button danger" type="button" (click)="deleteHabit(row)" aria-label="Delete habit">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 7h14"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M8 7l1-3h6l1 3"></path>
+            <path d="M7 7l1 14h8l1-14"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <h2>{{ row.habit.name }}</h2>
+    <p>{{ row.habit.description || 'No description yet.' }}</p>
+
+    <div class="habit-meta">
+      <span>{{ row.habit.targetFrequency }}</span>
+      <span>{{ row.stats?.currentStreak || 0 }} day streak</span>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-header">
+        <span>7-day progress</span>
+        <strong>{{ row.stats?.progressionPercentage || 0 }}%</strong>
+      </div>
+      <div class="progress-track">
+        <span [style.width.%]="row.stats?.progressionPercentage || 0"></span>
+      </div>
+      <small>{{ row.stats?.completedDaysLast7 || 0 }} completed days over the last 7 days</small>
+    </div>
+
+    <p class="inline-error" *ngIf="row.error">{{ row.error }}</p>
+
+    <div class="card-actions">
+      <a class="btn btn-secondary" [routerLink]="['/habits', row.habit.id]">Details</a>
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="markCompleted(row)"
+        [disabled]="row.checking || (row.stats?.currentStreak || 0) > 0"
+      >
+        {{ (row.stats?.currentStreak || 0) > 0 ? 'Done today' : (row.checking ? 'Saving...' : 'Complete today') }}
+      </button>
+    </div>
+  </article>
+</section>

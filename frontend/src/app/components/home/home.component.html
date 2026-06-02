@@ -1,0 +1,65 @@
+<section class="dashboard-hero">
+  <div class="hero-copy">
+    <p class="eyebrow">Daily progress</p>
+    <h1>Build streaks that are easy to see and hard to forget.</h1>
+    <p>
+      Habit Tracker keeps your daily routines, completions, streaks, and seven-day progress in one calm workspace.
+    </p>
+
+    <div class="action-row">
+      <a class="btn btn-primary" routerLink="/habits">View habits</a>
+      <a class="btn btn-secondary" routerLink="/habits/new">Create habit</a>
+    </div>
+  </div>
+
+  <div class="overview-panel" aria-live="polite">
+    <div class="panel-header">
+      <span>Today</span>
+      <strong>{{ habits.length }} habits</strong>
+    </div>
+
+    <div class="overview-grid">
+      <div class="metric">
+        <span>{{ averageProgression }}%</span>
+        <small>Average progress</small>
+      </div>
+      <div class="metric">
+        <span>{{ completedLast7 }}</span>
+        <small>Completions this week</small>
+      </div>
+    </div>
+
+    <div class="mini-calendar" aria-hidden="true">
+      <span *ngFor="let day of [1, 2, 3, 4, 5, 6, 7]" [class.filled]="day < 6"></span>
+    </div>
+  </div>
+</section>
+
+<p class="status-message" *ngIf="loading">Loading habits...</p>
+<p class="status-message error" *ngIf="error">{{ error }}</p>
+
+<section class="content-section" *ngIf="!loading && !error">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Snapshot</p>
+      <h2>Current routines</h2>
+    </div>
+    <a class="link-action" routerLink="/habits">Open list</a>
+  </div>
+
+  <div class="empty-state" *ngIf="habits.length === 0">
+    <h3>No habits yet</h3>
+    <p>Create your first routine and mark it complete when today is done.</p>
+    <a class="btn btn-primary" routerLink="/habits/new">Create habit</a>
+  </div>
+
+  <div class="compact-list" *ngIf="habits.length > 0">
+    <a class="compact-item" *ngFor="let habit of habits.slice(0, 4)" [routerLink]="['/habits', habit.id]">
+      <span>
+        <strong>{{ habit.name }}</strong>
+        <small>{{ habit.category || 'General' }} / {{ habit.targetFrequency }}</small>
+      </span>
+      <span class="arrow" aria-hidden="true">></span>
+    </a>
+  </div>
+</section>

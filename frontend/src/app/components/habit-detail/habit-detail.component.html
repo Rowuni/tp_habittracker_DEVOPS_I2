@@ -1,0 +1,81 @@
+<p class="status-message" *ngIf="loading">Loading habit...</p>
+<p class="status-message error" *ngIf="error">{{ error }}</p>
+
+<ng-container *ngIf="!loading && !error && habit">
+  <section class="detail-header">
+    <div>
+      <p class="eyebrow">{{ habit.category || 'General' }}</p>
+      <h1>{{ habit.name }}</h1>
+      <p>{{ habit.description || 'No description yet.' }}</p>
+      <span class="frequency-badge">{{ habit.targetFrequency }}</span>
+    </div>
+
+    <div class="detail-actions">
+      <button
+        class="btn btn-primary"
+        type="button"
+        (click)="markCompleted()"
+        [disabled]="saving || (stats?.currentStreak || 0) > 0"
+      >
+        {{ (stats?.currentStreak || 0) > 0 ? 'Done today' : (saving ? 'Saving...' : 'Complete today') }}
+      </button>
+      <a class="btn btn-secondary" [routerLink]="['/habits', habit.id, 'edit']">Edit</a>
+      <button class="btn btn-danger" type="button" (click)="deleteHabit()">Delete</button>
+    </div>
+  </section>
+
+  <p class="status-message success" *ngIf="actionMessage">{{ actionMessage }}</p>
+
+  <section class="stats-layout" *ngIf="stats">
+    <article class="stat-card">
+      <span>{{ stats.currentStreak }}</span>
+      <small>Current streak</small>
+    </article>
+    <article class="stat-card">
+      <span>{{ stats.completedDaysLast7 }}/7</span>
+      <small>Completed days</small>
+    </article>
+    <article class="stat-card wide">
+      <div class="progress-header">
+        <small>Progression</small>
+        <strong>{{ stats.progressionPercentage }}%</strong>
+      </div>
+      <div class="progress-track large">
+        <span [style.width.%]="stats.progressionPercentage"></span>
+      </div>
+    </article>
+  </section>
+
+  <section class="content-section">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">History</p>
+        <h2>Checks</h2>
+      </div>
+      <a class="link-action" routerLink="/habits">All habits</a>
+    </div>
+
+    <div class="empty-state slim" *ngIf="checks.length === 0">
+      <h3>No checks yet</h3>
+      <p>Mark this habit as completed to start building a streak.</p>
+    </div>
+
+    <div class="check-list" *ngIf="checks.length > 0">
+      <div class="check-row" *ngFor="let check of checks; trackBy: trackByCheckId">
+        <span class="check-date">{{ check.checkDate }}</span>
+        <span class="check-status" [class.missed]="!check.completed">
+          {{ check.completed ? 'Completed' : 'Not completed' }}
+        </span>
+        <button class="icon-button danger" type="button" (click)="deleteCheck(check.checkDate)" aria-label="Remove check">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M5 7h14"></path>
+            <path d="M10 11v6"></path>
+            <path d="M14 11v6"></path>
+            <path d="M8 7l1-3h6l1 3"></path>
+            <path d="M7 7l1 14h8l1-14"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+</ng-container>
