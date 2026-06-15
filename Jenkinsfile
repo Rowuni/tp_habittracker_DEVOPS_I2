@@ -40,6 +40,7 @@ pipeline {
                 sh '''
                     pkill -f habit-tracker || true
                     sleep 2
+                    export JENKINS_NODE_COOKIE=dontKillMe
                     nohup java -jar backend/target/habit-tracker-*.jar \
                         --server.port=9090 \
                         > /tmp/habittracker.log 2>&1 &
