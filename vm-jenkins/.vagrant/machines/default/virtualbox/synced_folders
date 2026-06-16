@@ -1,1 +1,0 @@
-{"virtualbox":{"/vagrant_shared":{"create":true,"guestpath":"/vagrant_shared","hostpath":"C:/Users/cleme/Documents/Efrei/S8/DevOps/TP1/Q-Ready-Public/vm-jenkins/shared","disabled":false,"__vagrantfile":true},"/vagrant":{"guestpath":"/vagrant","hostpath":"C:/Users/cleme/Documents/Efrei/S8/DevOps/TP1/Q-Ready-Public/vm-jenkins","disabled":false,"__vagrantfile":true}}}
