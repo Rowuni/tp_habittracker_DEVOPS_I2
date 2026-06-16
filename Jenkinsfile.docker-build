@@ -1,0 +1,30 @@
+pipeline {
+    agent { label 'docker-build' }
+
+    environment {
+        DOCKERHUB_USER = 'rowuni'
+    }
+
+    stages {
+        stage('Build image Docker') {
+            steps {
+                sh 'docker build -t $DOCKERHUB_USER/habit-tracker:$BUILD_NUMBER ./backend'
+                sh 'docker tag $DOCKERHUB_USER/habit-tracker:$BUILD_NUMBER $DOCKERHUB_USER/habit-tracker:latest'
+            }
+        }
+
+        stage('Push vers DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                    sh 'docker push $DOCKERHUB_USER/habit-tracker:$BUILD_NUMBER'
+                    sh 'docker push $DOCKERHUB_USER/habit-tracker:latest'
+                }
+            }
+        }
+    }
+
+    post {
+        success { echo "Image poussée : ${DOCKERHUB_USER}/habit-tracker:${BUILD_NUMBER}" }
+    }
+}
