@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo 'Depot recupere.'
+            }
+        }
+
+        stage('Ansible — Ping tous les noeuds') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'vm-docker-ssh-key',
+                    keyFileVariable: 'SSH_KEY_FILE'
+                )]) {
+                    sh '''
+                        export ANSIBLE_HOST_KEY_CHECKING=False
+                        ansible all -i ansible/inventory.ini -m ping \
+                            --private-key "${SSH_KEY_FILE}"
+                    '''
+                }
+            }
+        }
+
+        stage('Ansible — Configurer les noeuds') {
+            steps {
+                withCredentials([sshUserPrivateKey(
+                    credentialsId: 'vm-docker-ssh-key',
+                    keyFileVariable: 'SSH_KEY_FILE'
+                )]) {
+                    sh '''
+                        export ANSIBLE_HOST_KEY_CHECKING=False
+                        ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
+                            --private-key "${SSH_KEY_FILE}" \
+                            --tags "install_pkg,install_app" \
+                            --extra-vars "package_name=curl app_name=nginx"
+                    '''
+                }
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo 'Configuration Ansible appliquee avec succes sur tous les noeuds.'
+        }
+        failure {
+            echo 'Le playbook Ansible a echoue. Consulter les logs ci-dessus.'
+        }
+    }
+}
