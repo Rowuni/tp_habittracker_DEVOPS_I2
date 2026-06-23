@@ -1,0 +1,7 @@
+---
+- name: Deployer nginx via un role Ansible Galaxy
+  hosts: vms
+  become: true
+
+  roles:
+    - role: geerlingguy.nginx
