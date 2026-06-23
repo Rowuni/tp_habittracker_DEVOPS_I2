@@ -1,0 +1,59 @@
+---
+- name: Configuration des noeuds cibles
+  hosts: all
+
+  vars:
+    package_name: curl
+    app_name: nginx
+
+  tasks:
+
+    # Tache 1 : paquet systeme toujours installe
+    - name: "Installer htop (toujours)"
+      ansible.builtin.package:
+        name: htop
+        state: present
+      tags: [always]
+
+    # Tache 2 : paquet systeme selon tag
+    - name: "Installer le paquet {{ package_name }}"
+      ansible.builtin.package:
+        name: "{{ package_name }}"
+        state: present
+      tags: [install_pkg]
+
+    - name: "Supprimer le paquet {{ package_name }}"
+      ansible.builtin.package:
+        name: "{{ package_name }}"
+        state: absent
+      tags: [remove_pkg]
+
+    # Tache 3 : application selon tag
+    - name: "Installer l'application {{ app_name }}"
+      ansible.builtin.package:
+        name: "{{ app_name }}"
+        state: present
+      tags: [install_app]
+
+    - name: "Demarrer et activer {{ app_name }}"
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: started
+        enabled: true
+      tags: [install_app]
+      when: ansible_connection != 'community.docker.docker'
+
+    - name: "Arreter {{ app_name }}"
+      ansible.builtin.service:
+        name: "{{ app_name }}"
+        state: stopped
+        enabled: false
+      tags: [remove_app]
+      when: ansible_connection != 'community.docker.docker'
+      ignore_errors: true
+
+    - name: "Supprimer l'application {{ app_name }}"
+      ansible.builtin.package:
+        name: "{{ app_name }}"
+        state: absent
+      tags: [remove_app]
